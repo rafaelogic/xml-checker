@@ -1,3 +1,12 @@
 {
-    "required_fields": []
+    "required_fields": [
+        "Title", "Unit_Number", "Type", "Bedrooms", "Bathrooms", "Project", 
+        "Price", "VAT", "Status", "Area", "Location", "Latitude", "Longitude", 
+        "Apartment_Floor", "Block", "Phase", "Construction_Stage", "Plot_Size", 
+        "Yard", "Total_Covered_Areas", "Internal_Covered_Areas", "Covered_Verandas", 
+        "Semi_Covered_Verandas", "Uncovered_Verandas", "Covered_Parking", 
+        "Semi_Covered_Parking", "Uncovered_Parking", "Storage_Size", 
+        "Swimming_Pool", "Energy_Efficient_Content", "Property_Reference", 
+        "Description", "gallery"
+    ]
 }
