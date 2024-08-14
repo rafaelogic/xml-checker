@@ -24,6 +24,7 @@ A simple script that checks if certain fields are missing in a list of XML files
 1. cd to the project's root directory
 
 2. Run `python3 xml-checker.py`
+
 **Example Output** 
 ```bash
 File: properties.xml
