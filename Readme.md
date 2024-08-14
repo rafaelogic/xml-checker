@@ -7,7 +7,7 @@ A simple script that checks if certain fields are missing in a list of XML files
 
 2. Clone this repository.
 
-3. Put your XML files in the `xmls` directory.
+3. Create an `xmls` directory and Put your XML files inside.
 
 4. Create a new file called `required_fields.json` in the project root if not present. This file should contain a list of the fields that you want to check if they are missing in each XML file. For example:
 ```json
