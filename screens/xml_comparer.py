@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 from data.xml_processor import process_xml_content
 
+# Cache the expensive processing function
+@st.cache_data
+def process_xml_content_cached(xml_content1, xml_content2, file1_name, file2_name, compare_values):
+    return process_xml_content(xml_content1, xml_content2, file1_name, file2_name, compare_values)
+
 def render_page():
     st.sidebar.header("Upload Files")
 
@@ -21,7 +26,8 @@ def render_page():
         )
 
         if st.sidebar.button("Start Comparison"):
-            results = process_xml_content(xml_content1, xml_content2, file1_name, file2_name, compare_values)
+            # Use cached function for performance
+            results = process_xml_content_cached(xml_content1, xml_content2, file1_name, file2_name, compare_values)
             
             if compare_values == "Missing Fields":
                 st.subheader("Compare Missing Fields")
@@ -34,7 +40,16 @@ def render_page():
                 with col2:
                     st.write(f"Missing Fields in {file2_name}")
                     st.write(", ".join(results['missing_in_file2']))
+
+                # Offer CSV export for missing fields
+                missing_fields_csv = pd.DataFrame({
+                    f"Missing in {file1_name}": results['missing_in_file1'],
+                    f"Missing in {file2_name}": results['missing_in_file2']
+                })
                 
+                csv = missing_fields_csv.to_csv(index=False)
+                st.download_button("Download CSV", csv, file_name="missing_fields_comparison.csv", mime="text/csv")
+            
             elif compare_values == "Field Values":
                 unique_titles = results['field_value_mismatches']['Title'].unique()
                 
@@ -46,18 +61,19 @@ def render_page():
                     st.write(f"{len(unique_titles)} Properties having field value mismatches between {len(results['field_value_mismatches'])} rows:")
                     st.dataframe(styled_df)
 
+                    # Offer CSV export for field value mismatches
+                    csv_mismatches = results['field_value_mismatches'].to_csv(index=False)
+                    st.download_button("Download CSV", csv_mismatches, file_name="field_value_mismatches.csv", mime="text/csv")
+
                     # Option to render the table as HTML
                     if st.button("Display Results in HTML"):
                         html_table = generate_html_table(results['field_value_mismatches'], file1_name, file2_name)
-                        # Print HTML to logs for debugging
-                        print(html_table)  # To check in logs if HTML is being generated correctly
                         st.markdown(html_table, unsafe_allow_html=True)
                         st.write("You can print this page and save it as PDF in your browser.")
                 else:
                     st.write("No mismatches found between the field values.")
     else:
         st.info("Please upload a pair of XML files in the sidebar to get started.")
-
 
 def highlight_rows_by_title(df):
     def style_func(row):
@@ -74,10 +90,10 @@ def highlight_rows_by_title(df):
     
     return df.style.apply(style_func, axis=1)
 
-# New function to generate HTML table
+# Function to generate HTML table
 def generate_html_table(df, file1_name, file2_name):
-    # Initialize the HTML table with headers
-    html = f"""
+    # Use a list to accumulate HTML strings, which is more efficient than concatenating strings
+    html = [f"""
     <h2 style="text-align:center;">XML Comparison Report</h2>
     <p style="text-align:center;">Comparison between {file1_name} and {file2_name}</p>
     <table border="1" style="border-collapse: collapse; width: 100%; text-align: left;">
@@ -86,23 +102,23 @@ def generate_html_table(df, file1_name, file2_name):
             <th>{file1_name}</th>
             <th>{file2_name}</th>
         </tr>
-    """
-
-    # Populate the rows of the table
-    for index, row in df.iterrows():
-        html += f"""
+    """]
+    
+    # Iterate over dataframe rows and append rows to the HTML list
+    for _, row in df.iterrows():
+        html.append(f"""
         <tr>
             <td>{row['Title']}</td>
             <td>{row['Value1']}</td>
             <td>{row['Value2']}</td>
         </tr>
-        """
+        """)
 
     # Close the table
-    html += "</table>"
+    html.append("</table>")
 
-    return html
-
+    # Join all parts of the HTML for efficient rendering
+    return "".join(html)
 
 if __name__ == "__main__":
     render_page()
