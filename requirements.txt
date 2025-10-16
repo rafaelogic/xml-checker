@@ -1,3 +1,12 @@
+# Core Dependencies
+streamlit==1.37.1
+pandas==2.2.2
+lxml==5.3.0
+
+# PDF Generation
+reportlab==4.2.5
+
+# Streamlit Dependencies
 altair==5.4.0
 attrs==24.2.0
 blinker==1.8.2
@@ -11,14 +20,12 @@ idna==3.7
 Jinja2==3.1.4
 jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
-lxml==5.3.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 narwhals==1.4.1
 numpy==2.0.1
 packaging==24.1
-pandas==2.2.2
 pillow==10.4.0
 pip-autoremove==0.10.0
 protobuf==5.27.3
@@ -33,7 +40,6 @@ rich==13.7.1
 rpds-py==0.20.0
 six==1.16.0
 smmap==5.0.1
-streamlit==1.37.1
 tenacity==8.5.0
 toml==0.10.2
 tornado==6.4.1
