@@ -1,4 +1,4 @@
-from data.field_comparator import extract_all_fields, compare_fields
+from data.field_comparator import extract_all_fields, compare_fields, compare_field_structure, compare_field_structure_reverse
 from data.value_comparator import compare_field_values
 
 def process_xml_content(xml_content1, xml_content2, file1_name, file2_name, compare_values):
@@ -6,10 +6,23 @@ def process_xml_content(xml_content1, xml_content2, file1_name, file2_name, comp
     fields2 = extract_all_fields(xml_content2)
     
     if compare_values == "Missing Fields":
-        missing_fields_in_file1, missing_fields_in_file2, _ = compare_fields(fields1, fields2)
+        # Use first XML as reference structure
+        comparison_result = compare_field_structure(xml_content1, xml_content2)
         return {
-            'missing_in_file1': missing_fields_in_file1,
-            'missing_in_file2': missing_fields_in_file2
+            'reference_fields': comparison_result['reference_fields'],
+            'missing_fields': comparison_result['missing_in_second_file'],
+            'total_reference_fields': comparison_result['total_reference_fields'],
+            'total_missing': comparison_result['total_missing']
+        }
+    
+    elif compare_values == "Missing Fields (Reverse)":
+        # Use second XML as reference structure (reverse check)
+        comparison_result = compare_field_structure_reverse(xml_content1, xml_content2)
+        return {
+            'reference_fields': comparison_result['reference_fields'],
+            'missing_fields': comparison_result['missing_in_first_file'],
+            'total_reference_fields': comparison_result['total_reference_fields'],
+            'total_missing': comparison_result['total_missing']
         }
     
     elif compare_values == "Field Values":
